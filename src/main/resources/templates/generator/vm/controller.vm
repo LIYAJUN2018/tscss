@@ -1,0 +1,129 @@
+#set($base = $pack.BASE_PACKAGE)
+#set($entityPK = $pack.ENTITY_PACKAGE)
+#set($mapperPK = $pack.MAPPER_PACKAGE)
+#set($servicePK = $pack.SERVICE_PACKAGE)
+#set($serviceImplPK = $pack.SERVICE_IMPL_PACKAGE)
+#set($controllerPK = $pack.CONTROLLER_PACKAGE)
+#set($m = ${config.moduleName})
+#set($f = ${config.funName})
+#set($pk = ${config.pkCamelCase})
+#set($service = $f + 'Service')
+#set($class = ${config.firstCapFunName})
+package ${base}.modules.$m.${controllerPK};
+
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+import ${base}.common.controller.BaseController;
+import ${base}.common.dto.R;
+import ${base}.modules.$m.${entityPK}.$class;
+import ${base}.modules.${m}.${servicePK}.${class}Service;
+
+import java.util.List;
+
+
+/**
+ * <p>
+ * $config.tableComment 前端控制器
+ * </p>
+ #if($author)
+ * @author $author
+ #end
+ * @since $createTime
+ */
+@RestController
+@RequestMapping("$m/$f")
+public class ${class}Controller extends BaseController {
+
+    @Autowired
+    private ${class}Service $service;
+
+    @RequiresPermissions("$m:$f:index")
+    @GetMapping("index")
+    public ModelAndView index() {
+        return new ModelAndView("$m/$f");
+    }
+
+    #set($addEditViewFlg = false)
+    #foreach($headButton in $config.headButtons)
+        #if($headButton.id == 1)
+            #set($addEditViewFlg = true)
+        #end
+    #end
+    #foreach($rowButton in $config.rowButtons)
+        #if($rowButton.id == 2)
+            #set($addEditViewFlg = true)
+        #end
+    #end
+    #if($addEditViewFlg)
+    @GetMapping(value = "edit")
+    public ModelAndView edit(Long $pk) {
+        ModelAndView mv = new ModelAndView("${m}/${f}_edit");
+        $class $f;
+        if (id == null) {
+            $f = new $class();
+        } else {
+            $f = ${service}.getById($pk);
+        }
+        mv.addObject("editInfo", $f);
+        return mv;
+    }
+    #end
+
+    @GetMapping(value = "list/data")
+    public R listData($class $f) {
+        Page<$class> page = ${service}.list${class}Page($f);
+        return R.ok(page);
+    }
+    #foreach($h in $config.headButtons)
+
+    @RequiresPermissions("$h.perId")
+    @PostMapping(value = "$h.key")
+    #if($h.id == 1)
+    public R ${h.key}($class $f) {
+        ${service}.save($f);
+        return R.ok();
+    }
+    #elseif($h.id == 2)
+    public R ${h.key}(@RequestParam("${pk}s") List<Long> ${pk}s) {
+        ${service}.removeByIds(${pk}s);
+        return R.ok();
+    }
+    #else
+    public R ${h.key}() {
+        return R.ok("该功能未实现");
+    }
+    #end
+    #end
+    #foreach($r in $config.rowButtons)
+
+    @RequiresPermissions("$r.perId")
+    #if($r.id == 2)
+    @PostMapping(value = "$r.key")
+    public R ${r.key}($class $f) {
+        ${service}.updateById($f);
+        return R.ok();
+    }
+    #elseif($r.id == 3)
+    @PostMapping(value = "$r.key/{$pk}")
+    public R ${r.key}(@PathVariable Long $pk) {
+        ${service}.removeById($pk);
+        return R.ok();
+    }
+    #else
+    @PostMapping(value = "$r.key")
+    public R ${r.key}() {
+        return R.ok("该功能未实现");
+    }
+    #end
+    #end
+
+    @GetMapping(value = "get/{$pk}")
+    public R get(@PathVariable Long $pk) {
+        return R.ok(${service}.getById($pk));
+    }
+
+}
+

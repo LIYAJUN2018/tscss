@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kalvin.kvf.modules.sys.infoMng.classroomInfo.mapper.ClassroomInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.kalvin.kvf.modules.sys.infoMng.classroomInfo.entity.Classroom">
+        <id column="id" property="id" />
+        <result column="id" property="id" />
+        <result column="Classroom_name" property="classroomName" />
+        <result column="Classroom_type" property="classroomType" />
+          <result column="Classroom_rs" property="classroomRs" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, Classroom_name, Classroom_type, Classroom_rs
+    </sql> 
+
+    <select id="selectClassroomList" resultType="com.kalvin.kvf.modules.sys.infoMng.classroomInfo.entity.Classroom">
+        select <include refid="Base_Column_List" /> from classroom
+       <!--  <trim prefix="where" prefixOverrides="and">
+            <if test="course.id != null">
+                AND course_id = #{course.id}
+            </if>
+            <if test="course.courseName != null and course.courseName != ''">
+                AND course_name LIKE concat("%", #{course.courseName, jdbcType=VARCHAR}, "%")
+            </if>
+        </trim> -->
+        order by Classroom_name asc
+    </select>
+
+</mapper>

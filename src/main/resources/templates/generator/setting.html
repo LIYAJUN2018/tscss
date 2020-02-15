@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:replace="common/base::pagetitle"></title>
+    <link th:replace="common/base::static"/>
+</head>
+<body>
+<div class="layui-form" style="padding: 20px 30px 0 0;">
+
+    <fieldset class="layui-elem-field">
+        <legend>表格</legend>
+        <div class="layui-field-box">
+            <div class="layui-form-item">
+                <label class="layui-form-label">表格类型</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="type" value="table" title="普通表格(layui table)" autocomplete="off" class="layui-input" checked>
+                    <input type="radio" name="type" value="tree_grid" title="树形表格(treegrid)" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="layui-elem-field">
+        <legend>查询字段配置</legend>
+        <div class="layui-field-box">
+            <div class="layui-form-item">
+                <label class="layui-form-label">请选择</label>
+                <div class="layui-input-block">
+                    <!-- 这里的xm-select属性是多选的ID, 如多处使用请保证全局唯一 -->
+                    <select name="queryCol" xm-select="queryCol" xm-select-search>
+                        <option  th:each="tableColumn:${tableColumns}" th:value="${tableColumn.columnName}" th:data-type="${tableColumn.dataType}" th:text="${tableColumn.columnComment}"></option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="layui-elem-field">
+        <legend>表格头部(head)按钮配置<button id="addHeadBtn" type="button" class="layui-btn layui-btn-xs layui-btn-normal" style="margin: 0 0 4px 5px;">添加按钮</button></legend>
+        <div class="layui-field-box">
+            <div class="layui-form-item">
+                <label class="layui-form-label">头部按钮</label>
+                <div class="layui-input-block" id="headBtnBox">
+                    <!--<button type="button" class="layui-btn layui-btn-sm" data-id="add">添加</button>
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-danger" data-id="batchdel">删除</button>-->
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="layui-elem-field">
+        <legend>表格行(row)按钮<button id="addRowBtn" type="button" class="layui-btn layui-btn-xs layui-btn-normal" style="margin: 0 0 4px 5px;">添加按钮</button></legend>
+        <div class="layui-field-box">
+            <div class="layui-form-item">
+                <label class="layui-form-label">行内按钮</label>
+                <div class="layui-input-block" id="rowBtnBox">
+                    <!--<button type="button" class="layui-btn layui-btn-sm" data-id="add"><i class="layui-icon layui-icon-add-1"></i>添加</button>
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-normal" data-id="edit"><i class="layui-icon layui-icon-edit"></i>编辑</button>
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-danger" data-id="del"><i class="layui-icon layui-icon-delete"></i>删除</button>-->
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="layui-elem-field">
+        <legend>表格核心配置</legend>
+        <div class="layui-field-box">
+            <div class="layui-form-item">
+                <label class="layui-form-label">不展示列</label>
+                <div class="layui-input-block">
+                    <!-- 这里的xm-select属性是多选的ID, 如多处使用请保证全局唯一 -->
+                    <select name="notShowCol" xm-select="notShowCol" xm-select-search>
+                        <option  th:each="tableColumn:${tableColumns}" th:value="${tableColumn.columnNameCamelCase}" th:data-type="${tableColumn.dataType}" th:data-comment="${tableColumn.comment}" th:text="${tableColumn.columnComment}" th:data-isNullable="${tableColumn.isNullable}" th:data-columnKey="${tableColumn.columnKey}" th:selected="${tableColumn.columnKey=='PRI'}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">只展示列</label>
+                <div class="layui-input-block">
+                    <!-- 这里的xm-select属性是多选的ID, 如多处使用请保证全局唯一 -->
+                    <select name="onlyShowCol" xm-select="onlyShowCol" xm-select-search>
+                        <option  th:each="tableColumn:${tableColumns}" th:value="${tableColumn.columnNameCamelCase}" th:data-type="${tableColumn.dataType}" th:data-comment="${tableColumn.comment}" th:text="${tableColumn.columnComment}" th:data-isNullable="${tableColumn.isNullable}" th:data-columnKey="${tableColumn.columnKey}"></option>
+                    </select>
+                </div>
+            </div>
+            <hr class="layui-bg-cyan">
+            <div id="columnSetBox">
+            </div>
+
+        </div>
+    </fieldset>
+
+    <div class="layui-form-item layui-hide">
+        <input type="button" lay-submit="" lay-filter="kFormSubmit" id="kFormSubmit" value="确认添加">
+        <input type="button" lay-submit="" lay-filter="previewSubmit" id="preview" value="preview">
+        <input type="text" name="tableName" th:value="${tableName}" autocomplete="off" class="layui-input">
+    </div>
+</div>
+
+<!--按钮配置页面模块-->
+<div class="layui-container" style="display: none; width: 100%;" id="headBtnEditTpl">
+    <div class="layui-form" lay-filter="btnForm" style="margin-top: 15px">
+        <div class="layui-form-item">
+            <label class="layui-form-label">名称</label>
+            <div class="layui-input-inline">
+                <input type="text" name="btnName" lay-verify="required" autocomplete="off" class="layui-input" placeholder="按钮名称">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">唯一标识</label>
+            <div class="layui-input-inline">
+                <input type="text" name="btnId" lay-verify="required" autocomplete="off" class="layui-input" placeholder="英文字母，用于按钮事件ID">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">权限标识</label>
+            <div class="layui-input-inline">
+                <input type="text" name="btnPerId" lay-verify="required" autocomplete="off" class="layui-input" placeholder="sys:xxx:add">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">配色</label>
+            <div class="layui-input-block">
+                <input type="radio" name="btnColorScheme" value="layui-btn-primary" title="白" autocomplete="off" class="layui-input">
+                <input type="radio" name="btnColorScheme" value="" title="绿" autocomplete="off" class="layui-input" checked>
+                <input type="radio" name="btnColorScheme" value="layui-btn-normal" title="蓝" autocomplete="off" class="layui-input">
+                <input type="radio" name="btnColorScheme" value="layui-btn-warm" title="橙" autocomplete="off" class="layui-input">
+                <input type="radio" name="btnColorScheme" value="layui-btn-danger" title="赤" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">图标</label>
+            <div class="layui-input-inline">
+                <input type="text" name="btnIcon" autocomplete="off" class="layui-input" placeholder="layui-icon layui-icon-edit">
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-hide">
+            <input type="button" lay-submit="" lay-filter="kBtnFormSubmit" id="kBtnFormSubmit" value="确认添加">
+            <input type="text" name="id" autocomplete="off" class="layui-input">
+            <input type="text" name="type" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+</div>
+
+<!--模板 start-->
+<script type="text/html" id="btnTpl">
+    <button type="button" class="layui-btn layui-btn-sm {{d.btnColorScheme}}" data-id="{{d.id}}"><i class="{{d.btnIcon}}"></i>{{d.btnName}}</button>
+</script>
+
+<script type="text/html" id="columnSetTpl">
+    <div class="layui-form-item" data-id="{{d.columnName}}" data-comment="{{d.columnComment}}" data-_comment="{{d.comment}}">
+        <label class="layui-form-label">{{d.columnComment}}({{d.columnName}})</label>
+        <div class="layui-input-block">
+            <div style="float:left;">
+                <label class="layui-form-label">是否排序</label>
+                <input type="radio" name="{{d.columnName}}_sort" value="0" title="是" autocomplete="off" class="layui-input">
+                <input type="radio" name="{{d.columnName}}_sort" value="1" title="否" autocomplete="off" class="layui-input" checked>
+            </div>
+
+            <div style="float:left;">
+                <label class="layui-form-label">是否格式化</label>
+                <input type="radio" name="{{d.columnName}}_format" {{= d.dataType==='tinyint'?'checked':''}} value="0" title="是" autocomplete="off" class="layui-input">
+                <input type="radio" name="{{d.columnName}}_format" {{= d.dataType==='tinyint'?'':'checked'}} value="1" title="否" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+</script>
+<!--模板 end-->
+
+<script th:replace="common/base::context"></script>
+<script th:replace="common/base::mainjs"></script>
+<script>
+
+    layui.use(['element', 'form', 'formSelects'], function () {
+        var $ = layui.$, element = layui.element, form = layui.form, formSelects = layui.formSelects;
+        var $headBtnBoxEl = $('#headBtnBox');
+        var $rowBtnBoxEl = $('#rowBtnBox');
+        var tableName = $('input[name="tableName"]').val();
+        var tableComment = kvfKit.getUrlParam('tableComment');
+        var moduleName = tableName.substring(0, tableName.indexOf('_'));
+        var funName = kvfKit.underlineToHump(tableName.substring(tableName.indexOf('_') + 1));
+        var tipsIdx, timer;
+        var prePerId = moduleName + ":" + funName;
+        var headBtnSetObj = {
+            1: {btnName: '添加', btnId: 'add', btnPerId: prePerId + ':add', btnColorScheme: '', btnIcon: ''},
+            2: {btnName: '批量删除', btnId: 'batchdel', btnPerId: prePerId + ':del', btnColorScheme: 'layui-btn-danger', btnIcon: ''}};
+        var rowBtnSetObj = {
+            2: {btnName: '编辑', btnId: 'edit', btnPerId: prePerId + ':edit', btnColorScheme: 'layui-btn-normal', btnIcon: 'layui-icon layui-icon-edit'},
+            3: {btnName: '删除', btnId: 'del', btnPerId: prePerId + ':del', btnColorScheme: 'layui-btn-danger', btnIcon: 'layui-icon layui-icon-delete'}};
+
+        var html = '';
+
+        init();
+
+        // 监听头部按钮事件
+        $headBtnBoxEl.on('click', 'button', function () {
+            var that = $(this);
+            clearTimeout(timer);
+            timer = setTimeout(function () {
+                open('head', that);
+            }, 200);
+        }).on('dblclick', 'button', function () {
+            clearTimeout(timer);
+            removeBtn(this, 'head');
+        }).on('mouseenter', 'button', function () {
+            tipsIdx = layer.tips('单击修改，双击删除。', $(this), {tips: 1, time: 5000});
+        }).on('mouseleave', 'button', function () {
+            layer.close(tipsIdx);
+        });
+
+        // 监听行按钮事件
+        $rowBtnBoxEl.on('click', 'button', function () {
+            var that = $(this);
+            clearTimeout(timer);
+            timer = setTimeout(function () {
+                open('row', that);
+            }, 200);
+        }).on('dblclick', 'button', function () {
+            clearTimeout(timer);
+            removeBtn(this, 'head');
+        }).on('mouseenter', 'button', function () {
+            tipsIdx = layer.tips('单击修改，双击删除。', $(this), {tips: 1, time: 5000});
+        }).on('mouseleave', 'button', function () {
+            layer.close(tipsIdx);
+        });
+
+        $('#addHeadBtn').on('click', function () {
+            open('head');
+        });
+
+        $('#addRowBtn').on('click', function () {
+            open('row');
+        });
+
+        $('input[name="btnId"]').on('keyup', function () {
+            var $btnPerIdEl = $('input[name="btnPerId"]');
+            $btnPerIdEl.val(prePerId + ":" + $(this).val());
+        });
+
+        var openIdx;
+        function open(type, that) {
+            var id = $(that).data('id');
+            var tempObj = {};
+            $('input[name="type"]').val(type);
+            if (type === 'head') {
+                tempObj = headBtnSetObj;
+            }
+            if (type === 'row') {
+                tempObj = rowBtnSetObj;
+            }
+            if (id && tempObj[id]) {
+                tempObj[id]['check[' + tempObj[id]['btnColorScheme'] + ']'] = true;
+                form.val('btnForm', tempObj[id]);
+            } else {
+                form.val('btnForm', {id: '', btnName: '', btnId: '', btnPerId: prePerId, btnColorScheme: '', btnIcon: '', 'check[]': true});
+            }
+            form.render('radio');
+            openIdx = layer.open({
+                type: 1
+                ,title: '按钮配置'
+                ,content: $('#headBtnEditTpl')
+                ,maxmin: false
+                ,area: ['511px', '390px']   // 宽高
+                ,btn: ['确定', '取消']
+                ,yes: function(index, layero) {
+                    $('#kBtnFormSubmit').click();
+                }
+            });
+        }
+
+        function removeBtn(that, type) {
+            var id = $(that).data('id');
+            $(that).remove();
+            if (type === 'head') {
+                delete headBtnSetObj[id];
+            }
+            if (type === 'row') {
+                delete rowBtnSetObj[id];
+            }
+        }
+
+        function genBtnObjId() {
+            return Math.floor(Math.random() * 1000);
+        }
+        
+        function getTablePriKey() {
+            return $('select[xm-select="notShowCol"] option:selected').val();
+        }
+
+        function renderHeadBtn(data) {
+            $headBtnBoxEl.append(kvfKit.renderTpl('btnTpl', data));
+        }
+
+        function renderRowBtn(data) {
+            $rowBtnBoxEl.append(kvfKit.renderTpl('btnTpl', data));
+        }
+
+        function addColumn(data) {
+            $('#columnSetBox').append(kvfKit.renderTpl('columnSetTpl', data));
+            form.render('radio');
+        }
+
+        function clearColumnSetBox() {
+            $('#columnSetBox').html('');
+        }
+
+        function renderColumnSetBox() {
+            var notShowColVals = formSelects.value('notShowCol');
+            var onlyShowColVals = formSelects.value('onlyShowCol');
+            var showColVals, showColId;
+            // 如果不展示列多选框没有一个选中，那么使用只展示多选框选中的
+            if (notShowColVals.length === 0 && onlyShowColVals.length > 0) {
+                showColId = 'onlyShowCol';
+                showColVals = onlyShowColVals;
+            } else {
+                showColId = 'notShowCol';
+                showColVals = notShowColVals;
+            }
+            var $xsEl = $('select[xm-select="' + showColId + '"]');
+
+            clearColumnSetBox();
+
+            if (showColId === 'notShowCol') {
+                var allColVals = [];
+                var $allColEls = $xsEl.find('option');
+
+                $.each($allColEls, function (i, item) {
+                    allColVals.push($(item).val());
+                });
+
+                $.each(showColVals, function (i, item) {
+                    var rmIdx = allColVals.indexOf(item.value);
+                    allColVals.splice(rmIdx, 1);
+                });
+
+                $.each(allColVals, function (i, n) {
+                    var cc = $xsEl.find('option[value="' + n + '"]').text();
+                    var dataType = $xsEl.find('option[value="' + n + '"]').data('type');
+                    var comment = $xsEl.find('option[value="' + n + '"]').data('comment');
+                    addColumn({columnName: n, columnComment: cc, comment: comment, dataType: dataType});
+                });
+
+            } else {
+                $.each(showColVals, function (i, item) {
+                    var dataType = $xsEl.find('option[value="' + item.value + '"]').data('type');
+                    var comment = $xsEl.find('option[value="' + item.value + '"]').data('comment');
+                    addColumn({columnName: item.value, columnComment: item.name, comment: comment, dataType: dataType});
+                });
+            }
+
+        }
+        
+        function getColumnSetParams() {
+            var arr = [];
+            var $columnSetItemEl = $('#columnSetBox').find('.layui-form-item');
+            $.each($columnSetItemEl, function (i, item) {
+                var id = kvfKit.underlineToHump($(item).data('id'));
+                var comment = $(item).data('comment');
+                var _comment = $(item).data('_comment');
+                var dataType = $(item).data('type');
+                var isNullable = $(item).data('isNullable');
+                var columnKey = $(item).data('columnKey');
+                var sort = $('input[name="' + id + '_sort"]:checked').val();
+                var format = $('input[name="' + id + '_format"]:checked').val();
+                arr.push({name: id, comment: comment, _comment: _comment, dataType: dataType, isNullable: isNullable, sort: sort == 0, format: format == 0});
+            });
+            return arr;
+        }
+
+        function getQueryColumnParams() {
+            var arr = [];
+            var queryColVals = formSelects.value('queryCol');
+            var $xsEl = $('select[xm-select="queryCol"]');
+            $.each(queryColVals, function (i, item) {
+                var dataType = $xsEl.find('option[value="' + item.value + '"]').data('type');
+                arr.push({name: item.value, comment: item.name, dataType: dataType});
+            });
+            return arr;
+        }
+
+        function getHeadBtnParams() {
+            var arr = [];
+            var keys = Object.keys(headBtnSetObj);
+            for (var i in keys) {
+                var current = headBtnSetObj[keys[i]];
+                arr.push({id:keys[i], name: current['btnName'], key: current['btnId'], perId: current['btnPerId'], colorScheme: current['btnColorScheme'], icon: current['btnIcon']});
+            }
+            return arr;
+        }
+
+        function getRowParams() {
+            var arr = [];
+            var keys = Object.keys(rowBtnSetObj);
+            for (var i in keys) {
+                var current = rowBtnSetObj[keys[i]];
+                arr.push({id:keys[i], name: current['btnName'], key: current['btnId'], perId: current['btnPerId'], colorScheme: current['btnColorScheme'], icon: current['btnIcon']});
+            }
+            return arr;
+        }
+
+        function init() {
+            var headKeys = Object.keys(headBtnSetObj);
+            var rowKeys = Object.keys(rowBtnSetObj);
+            for (var i in headKeys) {
+                headBtnSetObj[headKeys[i]]['id'] = headKeys[i];
+                renderHeadBtn(headBtnSetObj[headKeys[i]])
+            }
+            for (var j in rowKeys) {
+                rowBtnSetObj[rowKeys[j]]['id'] = rowKeys[j];
+                renderRowBtn(rowBtnSetObj[rowKeys[j]])
+            }
+
+            renderColumnSetBox();
+        }
+
+        formSelects.render('queryCol');
+
+        formSelects.on(null, function(id, vals, choice, isAdd, isDisabled) {
+            switch (id) {
+                case 'onlyShowCol':
+                    renderColumnSetBox();
+                    break;
+                case 'notShowCol':
+                    renderColumnSetBox();
+            }
+        }, true);
+
+        //监听提交
+        form.on('submit(kFormSubmit)', function(data){
+            var field = data.field; // 获取提交的字段
+            var columnSetArr = getColumnSetParams();
+            var queryColumnArr = getQueryColumnParams();
+            var headBtnArr = getHeadBtnParams();
+            var rowBtnArr = getRowParams();
+            var primaryKey = getTablePriKey();
+
+            var params = {};
+            params.tableName = tableName;
+            params.tableComment = tableComment;
+            params.primaryKey = primaryKey;
+            params.moduleName = moduleName;
+            params.funName = funName;
+            params.tableType = field.type;
+            params.headButtons = headBtnArr;
+            params.rowButtons = rowBtnArr;
+            params.queryColumns = queryColumnArr;
+            params.columns = columnSetArr;
+
+            // log('params=', JSON.stringify(params));
+            log('params=', params);
+
+            $.ajax({
+                type: req.type.post,
+                url: api.gen.customGenerateCode,
+                data: JSON.stringify(params),
+                contentType: 'application/json',
+                success: function (r) {
+                    if (r.code === req.status.ok) {
+                        kvfKit.sucessMsg('代码生成成功！');
+                        log(r.data);
+                        html = r.data;
+                    } else {
+                        kvfKit.errorMsg(r.msg);
+                    }
+                }
+            });
+        });
+
+        // 预览页面
+        $('#preview').on('click', function () {
+            log('html...');
+            if (!html) {
+                log('html2...');
+                return kvfKit.warningMsg('请先生成代码再预览');
+            }
+            var oidx = layer.open({
+                type: 1
+                ,title: '页面预览'
+                ,content: html
+                ,maxmin: false
+            });
+            layer.full(oidx);
+            return true;
+        });
+
+        form.on('submit(kBtnFormSubmit)', function (data) {
+            var field = data.field;
+            var id = genBtnObjId();
+            switch (field.type) {
+                case 'head':
+                    if (field.id) {
+                        delete headBtnSetObj[field.id];
+                        headBtnSetObj[field.id] = field;
+                        $headBtnBoxEl.find('button[data-id="' + field.id + '"]').replaceWith(kvfKit.renderTpl('btnTpl', field));
+                    } else {
+                        field.id = id;
+                        headBtnSetObj[id] = field;
+                        renderHeadBtn(field);
+                    }
+
+                    break;
+                case 'row':
+                    if (field.id) {
+                        delete rowBtnSetObj[field.id];
+                        rowBtnSetObj[field.id] = field;
+                        $rowBtnBoxEl.find('button[data-id="' + field.id + '"]').replaceWith(kvfKit.renderTpl('btnTpl', field));
+                    } else {
+                        field.id = id;
+                        rowBtnSetObj[id] = field;
+                        renderRowBtn(field);
+                    }
+            }
+            layer.close(openIdx);
+            return false;
+
+        });
+
+        var tipIdx;
+        $('div.xm-select-parent[fs_id="notShowCol"]').hover(function () {
+            tipIdx = layer.tips('最高优先级', $(this), {tips: 1});
+        }, function () {
+            layer.close(tipIdx);
+        });
+        /*$('div.xm-select-parent[fs_id="onlyShowCol"]').hover(function () {
+            tipIdx = layer.tips('当上面的多选框（不展示列）无选择时有效', $(this), {tips: 1});
+        }, function () {
+            layer.close(tipIdx);
+        });*/
+
+    })
+</script>
+</body>
+</html>

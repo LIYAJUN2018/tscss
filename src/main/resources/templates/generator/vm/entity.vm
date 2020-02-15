@@ -1,0 +1,54 @@
+#set($base = $pack.BASE_PACKAGE)
+#set($entityPK = $pack.ENTITY_PACKAGE)
+#set($mapperPK = $pack.MAPPER_PACKAGE)
+#set($servicePK = $pack.SERVICE_PACKAGE)
+#set($serviceImplPK = $pack.SERVICE_IMPL_PACKAGE)
+#set($controllerPK = $pack.CONTROLLER_PACKAGE)
+package ${base}.modules.${config.moduleName}.${entityPK};
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
+import ${base}.common.${entityPK}.BaseEntity;
+
+#foreach($pkg in $config.pkgs)
+import ${pkg}
+#end
+
+/**
+ * <p>
+ * $config.tableComment
+ * </p>
+ #if($author)
+ * @author $author
+ #end
+ * @since $createTime
+ */
+@Data
+@EqualsAndHashCode(callSuper = true)
+@Accessors(chain = true)
+@TableName("$config.tableName")
+public class $config.firstCapFunName extends BaseEntity {
+
+    private static final long serialVersionUID = 1L;
+
+    #foreach($column in $config.allColumns)
+    #if($column.columnName == $config.primaryKey)
+    /**
+     * $column.comment
+     */
+    @TableId(value = "$config.primaryKey", type = IdType.AUTO)
+    private $column.variableType $column.columnNameCamelCase;
+    #else
+
+    /**
+     * $column.comment
+     */
+    private $column.variableType $column.columnNameCamelCase;
+    #end
+    #end
+
+}

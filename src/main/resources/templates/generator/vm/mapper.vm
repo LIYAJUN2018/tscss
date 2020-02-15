@@ -1,0 +1,34 @@
+#set($base = $pack.BASE_PACKAGE)
+#set($entityPK = $pack.ENTITY_PACKAGE)
+#set($mapperPK = $pack.MAPPER_PACKAGE)
+#set($servicePK = $pack.SERVICE_PACKAGE)
+#set($serviceImplPK = $pack.SERVICE_IMPL_PACKAGE)
+#set($controllerPK = $pack.CONTROLLER_PACKAGE)
+package ${base}.modules.${config.moduleName}.${mapperPK};
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import ${base}.modules.${config.moduleName}.${entityPK}.${config.firstCapFunName};
+
+import java.util.List;
+
+/**
+ * <p>
+ * $config.tableComment Mapper 接口
+ * </p>
+ #if($author)
+ * @author $author
+ #end
+ * @since $createTime
+ */
+public interface ${config.firstCapFunName}Mapper extends BaseMapper<$config.firstCapFunName> {
+
+    /**
+     * 查询列表(分页)
+     * @param ${config.funName} 查询参数
+     * @param page 分页参数
+     * @return list
+     */
+    List<$config.firstCapFunName> select${config.firstCapFunName}List($config.firstCapFunName $config.funName, IPage page);
+
+}

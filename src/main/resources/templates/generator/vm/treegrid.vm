@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title th:replace="common/base::pagetitle"></title>
+    <link th:replace="common/base::static"/>
+    <link rel="stylesheet" th:href="@{/static/plugins/easyui/themes/material/easyui.css}">
+    <link rel="stylesheet" th:href="@{/static/plugins/easyui/themes/icon.css}">
+    <link rel="stylesheet" th:href="@{/static/css/kvf-treegrid.css}">
+</head>
+<body style="background-color: #f2f2f2;">
+
+<div id="kPage" class="layui-fluid" style="padding: 0">
+    <div class="layui-row">
+        <div class="layui-col-md12" id="kMainContentCol">
+            <div class="layui-fluid kvf-fluid-padding15">
+                <div class="layui-card">
+                    <div class="layui-form layui-card-header kvf-card-header-auto">
+                        <div class="layui-form-item">
+                            #foreach($queryColumn in $config.queryColumns)
+                            #if($queryColumn.dataType == 'timestamp' || $queryColumn.dataType == 'date' || $queryColumn.dataType == 'datetime')
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">$queryColumn.comment</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="$queryColumn.nameCamelCase" id="$queryColumn.nameCamelCase" placeholder="请输入$queryColumn.comment" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                            #else
+                            <div class="layui-inline">
+                                <label class="layui-form-label">$queryColumn.comment</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="$queryColumn.name" placeholder="请输入$queryColumn.comment" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            #end
+
+                            #if($config.queryColumns.size() == $foreach.count)
+                            <div class="layui-inline">
+                                <button class="layui-btn " lay-submit="" lay-filter="kTableSearchFilter">
+                                    <i class="layui-icon layui-icon-search"></i>
+                                </button>
+                                <button class="layui-btn " type="reset">
+                                    <i class="layui-icon layui-icon-refresh-1"></i>
+                                </button>
+                            </div>
+                            #end
+                            #end
+                        </div>
+                    </div>
+
+                    <div class="layui-card-body">
+                        <table id="kTreeGrid" style="height: 545px"></table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script th:replace="common/base::context"></script>
+<script th:replace="common/base::mainjs"></script>
+<script th:src="@{/static/plugins/easyui/easyloader.js}"></script>
+
+<!--头部工具栏模板-->
+<div type="text/html" id="headToolbarTpl" class="layui-btn-container" style="padding: 6px 0 0 6px">
+    #foreach($headButton in $config.headButtons)
+    <button class="layui-btn layui-btn-sm $headButton.colorScheme" data-event="$headButton.key">#if($headButton.icon != '')<i class="$headButton.icon"></i>#end$headButton.name</button>
+    #end
+</div>
+
+<!--表格行工具栏模板-->
+<script type="text/html" id="rowToolbarTpl">
+    #foreach($rowButton in $config.rowButtons)
+    <a class="layui-btn layui-btn-xs $rowButton.colorScheme" data-event="$rowButton.key" onclick="active.${rowButton.key}(this)" data-id="{{d.$config.primaryKey}}">#if($rowButton.icon != '')<i class="$rowButton.icon"></i>#end$rowButton.name</a>
+    #end
+</script>
+
+<!--表格列格式化模板 start-->
+#foreach($column in $config.columns)
+#if($column.columnCommentValueRelations != $null)
+<script type="text/html" id="${column.name}Tpl">
+#if($column.columnCommentValueRelations.size() == 0)
+<!--todo由于注释不统一规范，无法为你生成格式化代码，请自行处理-->
+<span>{{d.$column.name}}</span>
+#end
+#foreach($columnValueRelation in $column.columnCommentValueRelations)
+    #if($foreach.count == 1)
+    {{#  if(d.$column.name == $columnValueRelation.key){ }}
+    <span class="layui-badge layui-bg-blue">$columnValueRelation.name</span>
+    #else
+    {{# } else if(d.$column.name == $columnValueRelation.key) { }}
+    <span class="layui-badge layui-bg-blue">$columnValueRelation.name</span>
+    #end
+    #if($foreach.count == $column.columnCommentValueRelations.size())
+    {{# } }}
+    #end
+#end
+</script>
+#end
+#end
+<!--表格列格式化模板 end-->
+
+<script type="text/javascript" th:inline="none">
+    var active;
+    layui.use(['element', 'form', 'layer', 'table', 'laydate'], function () {
+        var elemet = layui.element, form = layui.form, layer = layui.layer, laydate = layui.laydate;
+        var treeGridId = 'kTreeGrid';
+        var area = ['449px', '90%'];
+
+        var treeGridInst;
+        easyloader.load('treegrid', function () {
+
+            treeGridInst = $('#' + treeGridId).treegrid($.extend(config.easyui.treegrid, {
+                url: BASE_WEB + '$config.moduleName/$config.funName/list/data', // 数据接口
+                method: req.type.get,
+                idField: '$config.pkCamelCase',
+                treeField: 'name',
+                toolbar: '#headToolbarTpl',
+                onExpand: function (row) {
+                    treeGridKit.fitRightFrozenCol(treeGridInst);
+                },
+                onCollapse: function (row) {
+                    treeGridKit.fitRightFrozenCol(treeGridInst);
+                },
+                loadFilter: function (r) {
+                    // todo 请自行实现（下面代码为示例代码）：树表格第一层不设置_parentId即可，其它层级都要设置_parentId
+                    var rows = r.data;
+                    r.rows = rows;
+                    var rootType;
+                    for (var i = 0; i < rows.length; i++) {
+                        if (r.type === 'q') {
+                            if (i === 0) {
+                                rootType = rows[i].type;
+                            }
+                            if (rows[i].type !== rootType) {
+                                rows[i]._parentId = rows[i].parentId;
+                            }
+                        } else {
+                            if (rows[i].parentId !== 0) {
+                                rows[i]._parentId = rows[i].parentId;
+                            }
+                        }
+
+                        if (rows[i].type === 2) {
+                            rows[i].state = "open";
+                        } else {
+                            rows[i].state = "closed";
+                        }
+                    }
+                    return r;
+                },
+                onLoadSuccess: function (row, data) {
+                    treeGridKit.fitRightFrozenCol(treeGridInst);
+                },
+                frozenColumns: [[
+                    #if($config.rowButtons.size() > 0)
+                    {field: 'toolbar', title: '操作', width: 200, align: 'center', fixed: true, formatter: formatter.rowToolbar}
+                    #end
+                ]],
+                columns: [[
+                    #foreach($column in $config.columns)
+                    #if($foreach.count == 1)
+                    {field: '$column.name', title: '$column.comment', width:130#if($column.sort), sort: true#end#if($column.format), formatter: formatter.$column.name#end, fixed: true}
+                    #elseif($foreach.count == 2)
+                    ,{field: '$column.name', title: '$column.comment', width:130#if($column.sort), sort: true#end#if($column.format), formatter: formatter.$column.name#end, fixed: false}
+                    #else
+                    ,{field: '$column.name', title: '$column.comment', width:130#if($column.sort), sort: true#end#if($column.format), formatter: formatter.$column.name#end, fixed: true}
+                    #end
+                    #end
+                ]]
+
+            }));
+
+            treeGridKit.setPager(treeGridInst);
+        });
+
+        // 监听事件
+        active = {
+            #foreach($headButton in $config.headButtons)
+            $headButton.key: function (that) {
+                #if($headButton.id == 1)
+                var id = $(that).data('id');
+                id = id || 0;
+                var level = treeGridInst.treegrid('getLevel', id);
+
+                layer.open({
+                    type: 2
+                    ,title: '$headButton.name'
+                    ,content: BASE_WEB + '$config.moduleName/$config.funName/edit' + '?parentId=' + id + '&type=' + level
+                    ,maxmin: true
+                    ,area: area   // 宽高
+                    ,btn: ['确定', '取消']
+                    ,yes: function(index, layero){
+                        //点击确认触发 iframe 内容中的按钮提交
+                        var submit = layero.find('iframe').contents().find("#kFormSubmit");
+                        submit.click();
+                    }
+                });
+                #elseif($headButton.id == 2)
+                var checkData = treeGridInst.treegrid('getCheckedNodes');
+                if(checkData.length === 0){
+                    return kvfKit.warningMsg('请选择数据');
+                }
+                layer.confirm('确定删除吗？', function(index) {
+                    var ids = [];
+                    $.each(checkData, function(i, n){
+                        ids[i] = n.$config.pkCamelCase;
+                    });
+
+                    //执行 Ajax 后重载
+                    $.ajax({
+                        type: req.type.post,
+                        url: BASE_WEB + '$config.moduleName/$config.funName/batchdel',
+                        data: {ids: ids.toString()},
+                        success: function (r) {
+                            if (r.code === req.status.ok) {
+                                treeGridKit.reload(treeGridInst);
+                                kvfKit.sucessMsg('已删除');
+                            } else {
+                                kvfKit.errorMsg(r.msg);
+                            }
+                        }
+                    });
+                });
+                #else
+                layer.open({
+                    type: 1
+                    ,title: '$headButton.name'
+                    ,content: '<div><h3>todo 该功能未实现</h3></div>'    // content使用url打开，请把类型type更改为2
+                    ,maxmin: true
+                    ,area: area   // 宽高
+                    ,btn: ['确定', '取消']
+                    ,yes: function(index, layero){
+                        // todo点击确定处理事件
+                    }
+                });
+                #end
+            },
+            #end
+
+            #foreach($rowButton in $config.rowButtons)
+            $rowButton.key: function (that) {
+                var id = $(that).data('id');
+                #if($rowButton.id == 2)
+                layer.open({
+                    type: 2
+                    ,title: '$rowButton.name'
+                    ,content:  BASE_WEB + '$config.moduleName/$config.funName/edit?$config.pkCamelCase=' + id
+                    ,maxmin: true
+                    ,area: area   // 宽高
+                    ,btn: ['确定', '取消']
+                    ,yes: function(index, layero){
+                        //点击确认触发 iframe 内容中的按钮提交
+                        var submit = layero.find('iframe').contents().find("#kFormSubmit");
+                        submit.click();
+                    }
+                });
+                #elseif($rowButton.id == 3)
+                layer.confirm('确定删除吗？', function(index) {
+                    // 执行 Ajax 后重载
+                    $.ajax({
+                        type: req.type.post,
+                        url: BASE_WEB + '$config.moduleName/$config.funName/del/' + id,
+                        async: false,
+                        success: function (r) {
+                            if (r.code === req.status.ok) {
+                                treeGridKit.reload(treeGridInst);
+                                kvfKit.sucessMsg('已删除');
+                            } else {
+                                kvfKit.errorMsg(r.msg);
+                            }
+                        }
+                    });
+                });
+                #else
+                layer.open({
+                    type: 1
+                    ,title: '$rowButton.name'
+                    ,content: '<div><h3>todo 该功能未实现</h3></div>'    // content使用url打开，请把类型type更改为2
+                    ,maxmin: true
+                    ,area: area   // 宽高
+                    ,btn: ['确定', '取消']
+                    ,yes: function(index, layero){
+                        // todo点击确定处理事件
+                    }
+                });
+                #end
+            },
+            #end
+        };
+
+        kvfKit.activeInit(active);
+
+        $(window).resize(function () {
+            treeGridKit.fitRightFrozenCol(treeGridInst);
+        });
+
+        // 列格式化函数
+        var formatter = {
+            #if($config.rowButtons.size() > 0)
+            rowToolbar: function (value, row, index) {
+                return kvfKit.renderTpl('rowToolbarTpl', row);
+            },
+            #end
+            #foreach($column in $config.columns)
+            #if($column.columnCommentValueRelations != $null)
+            $column.name: function (value, row, index) {
+                return kvfKit.renderTpl('${column.name}Tpl', row);
+            },
+            #end
+            #end
+        };
+
+        #foreach($column in $config.queryColumns)
+        #set($name = $column.nameCamelCase)
+        #if($column.dataType == 'timestamp' || $column.dataType == 'date' || $column.dataType == 'datetime')
+        laydate.render({
+            elem: '#$name' // 指定元素
+        });
+        #end
+        #end
+
+        // 监听查询
+        form.on('submit(kTableSearchFilter)', function (obj) {
+            var params = obj.field;
+            $.get(BASE_WEB + '$config.moduleName/$config.funName/list/data', params, function(r) {
+                r.type = 'q';
+                treeGridInst.treegrid('loadData', r);
+            }, 'json');
+            return false;
+        });
+
+        // 绑定监听回车事件
+        kvfKit.bindEnterEventForLayuiForm();
+
+    });
+</script>
+
+</body>
+</html>

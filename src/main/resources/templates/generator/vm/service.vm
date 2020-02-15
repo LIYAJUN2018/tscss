@@ -1,0 +1,31 @@
+#set($base = $pack.BASE_PACKAGE)
+#set($entityPK = $pack.ENTITY_PACKAGE)
+#set($mapperPK = $pack.MAPPER_PACKAGE)
+#set($servicePK = $pack.SERVICE_PACKAGE)
+#set($serviceImplPK = $pack.SERVICE_IMPL_PACKAGE)
+#set($controllerPK = $pack.CONTROLLER_PACKAGE)
+package ${base}.modules.${config.moduleName}.${servicePK};
+
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
+import ${base}.modules.${config.moduleName}.${entityPK}.${config.firstCapFunName};
+
+/**
+ * <p>
+ * $config.tableComment 服务类
+ * </p>
+ #if($author)
+ * @author $author
+ #end
+ * @since $createTime
+ */
+public interface ${config.firstCapFunName}Service extends IService<$config.firstCapFunName> {
+
+    /**
+     * 获取列表。分页
+     * @param ${config.funName} 查询参数
+     * @return page
+     */
+    Page<${config.firstCapFunName}> list${config.firstCapFunName}Page(${config.firstCapFunName} $config.funName);
+
+}
