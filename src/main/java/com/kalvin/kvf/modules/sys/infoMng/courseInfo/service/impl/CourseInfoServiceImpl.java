@@ -1,6 +1,7 @@
 package com.kalvin.kvf.modules.sys.infoMng.courseInfo.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -20,5 +21,10 @@ public class CourseInfoServiceImpl extends ServiceImpl<CourseInfoMapper, Course>
 	        return page.setRecords(courses);
 	}
 
-	
+	@Override
+	public List<Map<String, Object>> listCourseForCode() {
+		return baseMapper.listCourseForCode();
+	}
+
+
 }

@@ -1,10 +1,11 @@
 package com.kalvin.kvf.modules.sys.infoMng.courseInfo.mapper;
 
-import java.util.List;
-
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kalvin.kvf.modules.sys.infoMng.courseInfo.entity.Course;
+
+import java.util.List;
+import java.util.Map;
 
 public interface CourseInfoMapper extends BaseMapper<Course> {
 	
@@ -17,5 +18,7 @@ public interface CourseInfoMapper extends BaseMapper<Course> {
 	 * @return List<Course>
 	 */
 	 List<Course> selectCourseList(Course course, Page page);
+
+	 List<Map<String, Object>> listCourseForCode();
 
 }

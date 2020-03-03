@@ -9,11 +9,12 @@
         <result column="Classroom_name" property="classroomName" />
         <result column="Classroom_type" property="classroomType" />
           <result column="Classroom_rs" property="classroomRs" />
+          <result column="ClassroomNo" property="ClassroomNo" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, Classroom_name, Classroom_type, Classroom_rs
+        id, Classroom_name, Classroom_type, Classroom_rs, ClassroomNo
     </sql> 
 
     <select id="selectClassroomList" resultType="com.kalvin.kvf.modules.sys.infoMng.classroomInfo.entity.Classroom">

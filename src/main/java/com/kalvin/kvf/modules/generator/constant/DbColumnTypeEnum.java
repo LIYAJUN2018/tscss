@@ -20,7 +20,7 @@ public enum DbColumnTypeEnum {
     DOUBLE("double", "Double"),
     DECIMAL("decimal", "BigDecimal"),
     DATE("date", "LocalDate"),
-    TIME("time", "LocalTime"),
+    TIME("Time", "LocalTime"),
     DATETIME("datetime", "LocalDateTime"),
     TIMESTAMP("timestamp", "LocalDateTime"),
     YEAR("year", "LocalDate"),

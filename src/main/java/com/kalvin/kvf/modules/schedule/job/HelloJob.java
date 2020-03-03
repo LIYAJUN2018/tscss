@@ -20,6 +20,6 @@ public class HelloJob extends QuartzJobBean {
     protected void executeInternal(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         // 获得传入的参数
         Object params = jobExecutionContext.getMergedJobDataMap().get(JobConstant.JOB_MAP_KEY);
-        log.info("helloJob is running params={}, time:{}", params, new Date());
+        log.info("helloJob is running params={}, Time:{}", params, new Date());
     }
 }

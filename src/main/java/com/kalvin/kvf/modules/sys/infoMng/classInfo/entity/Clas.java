@@ -29,4 +29,6 @@ public class Clas extends BaseEntity {
 
 	private Integer classroomId;
 
+	private String classNo;
+
 }

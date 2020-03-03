@@ -2,15 +2,11 @@ package com.kalvin.kvf.modules.sys.infoMng.courseInfo.controller;
 
 import java.util.List;
 
+import com.kalvin.kvf.modules.sys.infoMng.common.Arranging;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -36,6 +32,7 @@ public class CourseInfoController extends BaseController {
 	
 	@Autowired
 	private IClassInfoService classInfoService;
+
 
 	@RequiresPermissions("info:course:index")
 	@GetMapping("index")
@@ -100,5 +97,6 @@ public class CourseInfoController extends BaseController {
 		  CourseInfoService.removeByIds(ids);
 	        return R.ok();
 	    }
+
 
 }

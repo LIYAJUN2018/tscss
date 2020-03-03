@@ -30,4 +30,6 @@ public class Teacher extends BaseEntity {
 	
 	private String tel;
 
+	private String teacherNo;
+
 }

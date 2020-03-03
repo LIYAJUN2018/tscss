@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kalvin.kvf.modules.sys.infoMng.scheduleInfo.mapper.ScheduleInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.kalvin.kvf.modules.sys.infoMng.scheduleInfo.entity.Schedule">
+        <id column="id" property="id" />
+        <result column="id" property="id" />
+        <result column="Class_name" property="className" />
+        <result column="Class_id" property="classId" />
+        <result column="teacher_Id" property="teacherId" />
+        <result column="teacher" property="teacher" />
+        <result column="classroom_Id" property="classroomId" />
+        <result column="classroom" property="classroom" />
+        <result column="course_Id" property="courseId" />
+        <result column="course" property="course" />
+        <result column="attr" property="attr" />
+        <result column="time" property="time" />
+
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, Class_id, Class_name, teacher_Id, teacher, classroom_Id, classroom, course_Id, course, attr, time
+    </sql> 
+
+    <select id="selectScheduleList" resultType="java.util.Map">
+      SELECT DISTINCT cc.Class_name as className,
+(SELECT CONCAT(course,"-",teacher,"-",classroom) FROM class_course c WHERE cc.Class_name=c.Class_name AND c.time="01" ) AS 't1',
+(SELECT CONCAT(course,"-",teacher,"-",classroom) FROM class_course c WHERE cc.Class_name=c.Class_name AND c.time="02" ) AS 't2',
+(SELECT CONCAT(course,"-",teacher,"-",classroom) FROM class_course c WHERE cc.Class_name=c.Class_name AND c.time="03" ) AS 't3',
+(SELECT CONCAT(course,"-",teacher,"-",classroom) FROM class_course c WHERE cc.Class_name=c.Class_name AND c.time="04" ) AS 't4',
+(SELECT CONCAT(course,"-",teacher,"-",classroom) FROM class_course c WHERE cc.Class_name=c.Class_name AND c.time="05" ) AS 't5',
+(SELECT CONCAT(course,"-",teacher,"-",classroom) FROM class_course c WHERE cc.Class_name=c.Class_name AND c.time="06" ) AS 't6',
+(SELECT CONCAT(course,"-",teacher,"-",classroom) FROM class_course c WHERE cc.Class_name=c.Class_name AND c.time="07" ) AS 't7',
+(SELECT CONCAT(course,"-",teacher,"-",classroom) FROM class_course c WHERE cc.Class_name=c.Class_name AND c.time="08" ) AS 't8',
+(SELECT CONCAT(course,"-",teacher,"-",classroom) FROM class_course c WHERE cc.Class_name=c.Class_name AND c.time="09" ) AS 't9',
+(SELECT CONCAT(course,"-",teacher,"-",classroom) FROM class_course c WHERE cc.Class_name=c.Class_name AND c.time="10" ) AS 't10',
+(SELECT CONCAT(course,"-",teacher,"-",classroom) FROM class_course c WHERE cc.Class_name=c.Class_name AND c.time="11" ) AS 't11',
+(SELECT CONCAT(course,"-",teacher,"-",classroom) FROM class_course c WHERE cc.Class_name=c.Class_name AND c.time="12" ) AS 't12',
+(SELECT CONCAT(course,"-",teacher,"-",classroom) FROM class_course c WHERE cc.Class_name=c.Class_name AND c.time="13" ) AS 't13',
+(SELECT CONCAT(course,"-",teacher,"-",classroom) FROM class_course c WHERE cc.Class_name=c.Class_name AND c.time="14" ) AS 't14',
+(SELECT CONCAT(course,"-",teacher,"-",classroom) FROM class_course c WHERE cc.Class_name=c.Class_name AND c.time="15" ) AS 't15',
+(SELECT CONCAT(course,"-",teacher,"-",classroom) FROM class_course c WHERE cc.Class_name=c.Class_name AND c.time="16" ) AS 't16',
+(SELECT CONCAT(course,"-",teacher,"-",classroom) FROM class_course c WHERE cc.Class_name=c.Class_name AND c.time="17" ) AS 't17',
+(SELECT CONCAT(course,"-",teacher,"-",classroom) FROM class_course c WHERE cc.Class_name=c.Class_name AND c.time="18" ) AS 't18',
+(SELECT CONCAT(course,"-",teacher,"-",classroom) FROM class_course c WHERE cc.Class_name=c.Class_name AND c.time="19" ) AS 't19',
+(SELECT CONCAT(course,"-",teacher,"-",classroom) FROM class_course c WHERE cc.Class_name=c.Class_name AND c.time="20" ) AS 't20'
+FROM class_course cc
+ORDER BY cc.Class_name asc
+    </select>
+
+    <delete id="removeAll">
+        delete from class_course
+    </delete>
+
+</mapper>

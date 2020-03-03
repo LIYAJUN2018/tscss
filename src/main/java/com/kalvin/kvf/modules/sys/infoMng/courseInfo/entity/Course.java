@@ -1,6 +1,7 @@
 package com.kalvin.kvf.modules.sys.infoMng.courseInfo.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.kalvin.kvf.common.entity.BaseEntity;
@@ -36,7 +37,7 @@ public class Course extends BaseEntity {
 	/**
 	 * 每周课时
 	 */
-	private String courseTimes;
+	private Integer courseTimes;
 	
 	/**
 	 * 课程类型
@@ -50,6 +51,13 @@ public class Course extends BaseEntity {
 	private Integer classId;
 	
 	private Integer teacherId;
-	
+
+	@TableField(exist = false)
+	private String location;
+
+	private String courseNo;
+
+	private String attr;
+
 
 }

@@ -128,7 +128,7 @@ var api = {
     	courseAdd: BASE_WEB + 'info/course/add',
     	courseRm: BASE_WEB + 'info/course/remove/',
     	courseRmBatch: BASE_WEB + 'info/course/removeBatch',
-    	
+
     	// 教室管理
     	classroomListData : BASE_WEB + "info/classroom/list/data",
         classroomEditView: BASE_WEB + 'info/classroom/edit',
@@ -152,6 +152,12 @@ var api = {
         teacherAdd: BASE_WEB + 'info/teacher/add',
         teacherRm: BASE_WEB + 'info/teacher/remove/',
         teacherRmBatch: BASE_WEB + 'info/teacher/removeBatch',
+
+        // 课表管理
+        arranging: BASE_WEB + 'info/schedule/arranging',
+        scheduleListData : BASE_WEB + "info/schedule/list/data",
+        scheduleRm: BASE_WEB + 'info/schedule/remove/',
+        scheduleRmBatch: BASE_WEB + 'info/schedule/removeBatch',
 
     }
 

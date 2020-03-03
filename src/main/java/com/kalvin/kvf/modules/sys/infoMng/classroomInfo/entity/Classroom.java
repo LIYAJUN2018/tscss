@@ -30,4 +30,7 @@ public class Classroom extends BaseEntity{
 	 */
 	private String ClassroomRs;
 
+
+	private String ClassroomNo;
+
 }

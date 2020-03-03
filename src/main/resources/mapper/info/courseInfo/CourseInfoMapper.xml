@@ -4,33 +4,62 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.kalvin.kvf.modules.sys.infoMng.courseInfo.entity.Course">
-        <id column="id" property="id" />
-        <result column="id" property="id" />
-        <result column="course_name" property="courseName" />
-        <result column="course_times" property="courseTimes" />
-        <result column="course_type" property="courseType" />
-          <result column="class_name" property="className" />
-            <result column="class_id" property="classId" />
-          <result column="teacher" property="teacher" />
-          <result column="teacher_id" property="teacherId" />
+        <id column="id" property="id"/>
+        <result column="id" property="id"/>
+        <result column="course_name" property="courseName"/>
+        <result column="course_times" property="courseTimes"/>
+        <result column="course_type" property="courseType"/>
+        <result column="class_name" property="className"/>
+        <result column="class_id" property="classId"/>
+        <result column="teacher" property="teacher"/>
+        <result column="teacher_id" property="teacherId"/>
+        <result column="Course_No" property="courseNo"/>
+        <result column="attr" property="attr"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, course_name, course_times, course_type,class_name,class_id, teacher, teacher_id
-    </sql> 
+        id, course_name, course_times, course_type,class_name,class_id, teacher, teacher_id, Course_No, attr
+    </sql>
 
     <select id="selectCourseList" resultType="com.kalvin.kvf.modules.sys.infoMng.courseInfo.entity.Course">
-        select <include refid="Base_Column_List" /> from course
-       <!--  <trim prefix="where" prefixOverrides="and">
-            <if test="course.id != null">
-                AND course_id = #{course.id}
-            </if>
-            <if test="course.courseName != null and course.courseName != ''">
-                AND course_name LIKE concat("%", #{course.courseName, jdbcType=VARCHAR}, "%")
-            </if>
-        </trim> -->
+        select
+        <include refid="Base_Column_List"/>
+        from course
+        <!--  <trim prefix="where" prefixOverrides="and">
+             <if test="course.id != null">
+                 AND course_id = #{course.id}
+             </if>
+             <if test="course.courseName != null and course.courseName != ''">
+                 AND course_name LIKE concat("%", #{course.courseName, jdbcType=VARCHAR}, "%")
+             </if>
+         </trim> -->
         order by course_name asc
+    </select>
+
+    <select id="listCourseForCode" resultType="java.util.HashMap">
+        SELECT
+        co.Course_name,
+	co.Course_No,
+	co.Course_times,
+	t.`name`,
+	t.teacherNo,
+	c.Class_name,
+	c.classNo,
+	cr.Classroom_name,
+	cr.ClassroomNo,
+	CONCAT(
+		t.teacherNo,
+		co.Course_No,
+		c.classNo,
+		cr.ClassroomNo,
+		co.attr
+	) as code
+	FROM
+	course co
+LEFT JOIN teacher t ON co.teacher_id = t.id
+LEFT JOIN class c ON co.class_id = c.id
+LEFT JOIN classroom cr ON c.Classroom_id = cr.id
     </select>
 
 </mapper>

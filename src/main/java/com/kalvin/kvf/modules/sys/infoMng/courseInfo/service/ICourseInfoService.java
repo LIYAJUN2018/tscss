@@ -1,12 +1,11 @@
 package com.kalvin.kvf.modules.sys.infoMng.courseInfo.service;
 
-import org.springframework.stereotype.Service;
-
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.kalvin.kvf.modules.sys.entity.User;
 import com.kalvin.kvf.modules.sys.infoMng.courseInfo.entity.Course;
 
+import java.util.List;
+import java.util.Map;
 
 public interface ICourseInfoService extends IService<Course>{
 
@@ -18,5 +17,7 @@ public interface ICourseInfoService extends IService<Course>{
 	 * @return Page<User>
 	 */
 	Page<Course> listUserPage(Course course);
+
+	List<Map<String, Object>> listCourseForCode();
 
 }
