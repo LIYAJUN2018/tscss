@@ -47,12 +47,12 @@
 	c.Class_name,
 	c.classNo,
 	cr.Classroom_name,
-	cr.ClassroomNo,
+	cr.Classroom_No,
 	CONCAT(
 		t.teacherNo,
 		co.Course_No,
 		c.classNo,
-		cr.ClassroomNo,
+		cr.Classroom_No,
 		co.attr
 	) as code
 	FROM

@@ -1,7 +1,8 @@
 package com.kalvin.kvf.modules.sys.infoMng.common;
 
 import com.kalvin.kvf.modules.sys.infoMng.classInfo.service.IClassInfoService;
-import com.kalvin.kvf.modules.sys.infoMng.courseInfo.entity.Course;
+import com.kalvin.kvf.modules.sys.infoMng.classroomInfo.entity.Classroom;
+import com.kalvin.kvf.modules.sys.infoMng.classroomInfo.service.IClassroomInfoService;
 import com.kalvin.kvf.modules.sys.infoMng.courseInfo.service.ICourseInfoService;
 import com.kalvin.kvf.modules.sys.infoMng.scheduleInfo.entity.Schedule;
 import com.kalvin.kvf.modules.sys.infoMng.scheduleInfo.service.IScheduleInfoService;
@@ -11,6 +12,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
 
 @Component
 public class GA {
@@ -23,6 +28,9 @@ public class GA {
 
     @Autowired
     IScheduleInfoService scheduleInfoService;
+
+    @Autowired
+    IClassroomInfoService classroomInfoService;
 
     private Map<String, String> courseCodeMap;
     private Map<String, String> teacherCodeMap;
@@ -44,23 +52,18 @@ public class GA {
             // 进行时间分配
             List<String> resultGeneList = codingTime(geneList);
 
+            resultGeneList = codingClassroom(resultGeneList);
+
             // 将整个编码按班级分组
             Map<String, List<String>> individualMap = transformIndividual(resultGeneList);
 
             // 进行遗传进化操作
             individualMap = geneticEvolution(individualMap);
-            double count = 0;
-            for (String key :
-                    individualMap.keySet()) {
-                double value = GAUtils.alculateExpectedValue(individualMap.get(key));
-                count += value;
-                System.out.println(key + " 的适应度为：" + value);
-            }
-            System.out.println("适应度均值为：" + count/9);
 
+            // 对基因进行合并
             List<String> resultList = closedGene(individualMap);
 
-            //第七步对分配好时间教室的基因进行解码，准备存入数据库
+            //第七步对基因进行解码，准备存入数据库
             List<Schedule> schedules = decoding(resultList);
 
             scheduleInfoService.saveBatch(schedules);
@@ -84,7 +87,7 @@ public class GA {
             courseCodeMap.put(map.get("Course_No").toString(), map.get("Course_name").toString());
             teacherCodeMap.put(map.get("teacherNo").toString(), map.get("name").toString());
             classCodeMap.put(map.get("classNo").toString(), map.get("Class_name").toString());
-            classroomCodeMap.put(map.get("ClassroomNo").toString(), map.get("Classroom_name").toString());
+            classroomCodeMap.put(map.get("Classroom_No").toString(), map.get("Classroom_name").toString());
         }
     }
 
@@ -140,6 +143,57 @@ public class GA {
             gene = gene.substring(0, 20) + time;
             resultGeneList.add(gene);
         }
+        return resultGeneList;
+    }
+
+    public List<String> codingClassroom(List<String> geneList) {
+        List<String> resultGeneList = new ArrayList<>();
+        List<Classroom> classrooms = classroomInfoService.list();
+
+        List<Classroom> otherClassrooms = classrooms.stream()
+                .filter(classroom -> !"普通教室".equals(classroom.getClassroomType()))
+                .collect(toList());
+
+        // 存储教室编码
+        for (Classroom cr : otherClassrooms) {
+            classroomCodeMap.put(cr.getClassroomNo(), cr.getClassroomName());
+        }
+
+        Map<String, List<String>> classrommNoMap = classrooms.stream()
+                .filter(classroom -> !"普通教室".equals(classroom.getClassroomType()))
+                .collect(Collectors.groupingBy(c -> c.getClassroomNo().substring(1, 2), mapping(c -> c.getClassroomNo(), toList())));
+
+
+        Map<String, List<String>> classroomTimeMap = new HashMap<>();
+
+        for (String gene : geneList) {
+            String classroomType = GAUtils.cutGene(GAConstant.COURSE_LOCATION, gene);
+            if (!"0".equals(classroomType)) {
+                String time = GAUtils.cutGene(GAConstant.CLASS_TIME, gene);
+                List<String> classroomNoList = classrommNoMap.get(classroomType);
+                for (String classrommNo : classroomNoList) {
+                    List<String> stringList = classroomTimeMap.get(classrommNo);
+                    if (null == stringList ) {
+                        stringList = new ArrayList<>();
+                        gene = gene.substring(0, 14) + classrommNo + gene.substring(18, 22);
+                        stringList.add(time);
+                        classroomTimeMap.put(classrommNo, stringList);
+                        resultGeneList.add(gene);
+                        break;
+                    } else if (!stringList.contains(time)){
+                        gene = gene.substring(0, 14) + classrommNo + gene.substring(18, 22);
+                        stringList.add(time);
+                        resultGeneList.add(gene);
+                        break;
+                    }
+                }
+
+
+            } else {
+                resultGeneList.add(gene);
+            }
+        }
+
         return resultGeneList;
     }
 

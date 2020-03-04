@@ -2,7 +2,8 @@ package com.kalvin.kvf.modules.sys.infoMng.common;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -79,7 +80,9 @@ public class GAUtils {
             case GAConstant.CLASSROOM_NO:
                 return source.substring(14, 18);
             case GAConstant.COURSE_ATTR:
-                return source.substring(18, 20);
+                return source.substring(19, 20);
+            case GAConstant.COURSE_LOCATION:
+                return source.substring(18, 19);
             default:
                 return "";
         }
@@ -97,6 +100,7 @@ public class GAUtils {
 
         for (String gene : individualList) {
             String courseAttr = cutGene(GAConstant.COURSE_ATTR, gene);//获得属性
+
             String classTime = cutGene(GAConstant.CLASS_TIME, gene);//获得该课程的开课时间
             if (courseAttr.equals(GAConstant.MAIN_CODE)) {
                 F1 = F1 + calculateMainExpect(classTime);
@@ -214,6 +218,18 @@ public class GAUtils {
         } else {
             return 0;
         }
+    }
+
+    public Double countValue(HashMap<String, List<String>> individualMap){
+        double count = 0;
+        for (String key :
+                individualMap.keySet()) {
+            double value = GAUtils.alculateExpectedValue(individualMap.get(key));
+            count += value;
+            System.out.println(key + " 的适应度为：" + value);
+        }
+        System.out.println("适应度均值为：" + count/9);
+        return count;
     }
 
 

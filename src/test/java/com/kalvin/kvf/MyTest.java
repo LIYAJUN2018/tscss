@@ -110,6 +110,16 @@ public class MyTest {
         System.out.println( result);
     }
 
+    @Test
+    public void codingClassroomTest() {
+        List<String> list = new ArrayList<>();
+        ga.codingClassroom(list);
+    }
 
+    @Test
+    public void stringTest(){
+        String str = "0009000078000701040215";
+        System.out.println(str.substring(0, 14) + "0201" + str.substring(18,22));
+    }
 
 }
