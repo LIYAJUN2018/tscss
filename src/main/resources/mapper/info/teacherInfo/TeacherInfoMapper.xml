@@ -9,12 +9,12 @@
         <result column="sex" property="sex" />
         <result column="age" property="age" />
           <result column="tel" property="tel" />
-          <result column="teacherNo" property="teacherNo" />
+          <result column="teacher_no" property="teacherNo" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, name, sex, age, tel, teacherNo
+        id, name, sex, age, tel, teacher_no
     </sql> 
 
     <select id="selectTeacherList" resultType="com.kalvin.kvf.modules.sys.infoMng.teacherInfo.entity.Teacher">

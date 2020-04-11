@@ -7,6 +7,7 @@ import com.kalvin.kvf.modules.sys.infoMng.classInfo.entity.Clas;
 import com.kalvin.kvf.modules.sys.infoMng.classInfo.service.IClassInfoService;
 import com.kalvin.kvf.modules.sys.infoMng.classroomInfo.entity.Classroom;
 import com.kalvin.kvf.modules.sys.infoMng.classroomInfo.service.IClassroomInfoService;
+import com.kalvin.kvf.modules.sys.infoMng.teacherInfo.entity.Teacher;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("info/class")
@@ -35,6 +37,13 @@ public class ClassInfoController extends BaseController {
 	public R listData(Clas clas) {
 		Page<Clas> page = classInfoService.listClassPage(clas);
 		return R.ok(page);
+	}
+
+	@GetMapping(value = "list/getAllClassName")
+	public R getAllClassName() {
+		List<Clas> list = classInfoService.list();
+		List<String> collect = list.stream().map(Clas::getClassName).collect(Collectors.toList());
+		return R.ok(collect);
 	}
 	/**
 	 *

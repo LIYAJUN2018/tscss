@@ -1,24 +1,21 @@
 package com.kalvin.kvf.modules.sys.infoMng.courseInfo.controller;
 
-import java.util.List;
-
-import com.kalvin.kvf.modules.sys.infoMng.common.Arranging;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kalvin.kvf.common.controller.BaseController;
 import com.kalvin.kvf.common.dto.R;
-import com.kalvin.kvf.common.utils.GsonUtil;
 import com.kalvin.kvf.modules.sys.infoMng.classInfo.entity.Clas;
 import com.kalvin.kvf.modules.sys.infoMng.classInfo.service.IClassInfoService;
 import com.kalvin.kvf.modules.sys.infoMng.courseInfo.entity.Course;
 import com.kalvin.kvf.modules.sys.infoMng.courseInfo.service.ICourseInfoService;
 import com.kalvin.kvf.modules.sys.infoMng.teacherInfo.entity.Teacher;
 import com.kalvin.kvf.modules.sys.infoMng.teacherInfo.service.ITeacherInfoService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("info/course")

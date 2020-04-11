@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("info/teacher")
@@ -30,6 +31,13 @@ public class TeacherInfoController extends BaseController {
 	public R listData(Teacher teacher) {
 		Page<Teacher> page = teacherInfoService.listTeacherPage(teacher);
 		return R.ok(page);
+	}
+
+	@GetMapping(value = "list/getAllTeacherName")
+	public R getAllTeacherName() {
+		List<Teacher> list = teacherInfoService.list();
+		List<String> collect = list.stream().map(Teacher::getName).collect(Collectors.toList());
+		return R.ok(collect);
 	}
 
 	/**

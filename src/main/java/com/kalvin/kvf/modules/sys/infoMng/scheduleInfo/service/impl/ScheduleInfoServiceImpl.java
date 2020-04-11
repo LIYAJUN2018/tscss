@@ -2,6 +2,7 @@ package com.kalvin.kvf.modules.sys.infoMng.scheduleInfo.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.kalvin.kvf.modules.sys.infoMng.classInfo.entity.Clas;
 import com.kalvin.kvf.modules.sys.infoMng.scheduleInfo.entity.Schedule;
 import com.kalvin.kvf.modules.sys.infoMng.scheduleInfo.entity.Schedule1;
 import com.kalvin.kvf.modules.sys.infoMng.scheduleInfo.mapper.ScheduleInfoMapper;
@@ -19,6 +20,18 @@ public class ScheduleInfoServiceImpl extends ServiceImpl<ScheduleInfoMapper, Sch
     public List<Map> listUserPage() {
         List<Map> courses = baseMapper.selectScheduleList();
         return courses;
+    }
+
+    @Override
+    public List<Schedule> selectScheduleListByTeacher(String teacherName) {
+        List<Schedule> schedules = baseMapper.selectScheduleListByTeacher(teacherName);
+        return schedules;
+    }
+
+    @Override
+    public List<Schedule> selectScheduleListByClass(String className) {
+        List<Schedule> schedules = baseMapper.selectScheduleListByClass(className);
+        return schedules;
     }
 
     @Override

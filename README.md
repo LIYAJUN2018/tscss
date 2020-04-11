@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # kvf-admin
 kvf-admin是一套快速开发框架、脚手架、后台管理系统、权限系统，上手简单，拿来即用。为广大开发者去除大部分重复繁锁的代码工作，让开发者拥有更多的时间陪恋人、家人和朋友。
 * 后端采用spring boot、mybatis(已集成mybatis-plus增强插件，开发更迅速，可查看官方文档了解更多：[mybatis-plus](https://baomidou.gitee.io/mybatis-plus-doc/#/quick-start))、shiro框架

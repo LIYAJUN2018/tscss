@@ -9,17 +9,107 @@
 <body style="background-color: #f2f2f2;">
 
 <div id="kPage" class="layui-fluid" style="padding: 0">
-    <div class="layui-row">
-        <!-- 主要内容块 -->
-        <div class="layui-col-md12" id="kMainContentCol">
-            <div class="layui-fluid kvf-fluid-padding15">
-                <div class="layui-card">
+    <div class="layui-tab">
+        <ul class="layui-tab-title">
+            <li class="layui-this">课表总览</li>
+            <li>教师课表</li>
+            <li>班级课表</li>
+        </ul>
+        <div class="layui-tab-content">
 
-                    <div class="layui-card-body">
-                        <table id="kContentTable" lay-filter="kContentTable"></table>
+            <div class="layui-tab-item layui-show">
+                <div class="layui-row">
+                    <!-- 主要内容块 -->
+                    <div class="layui-col-md12" id="kMainContentCol">
+                        <div class="layui-fluid kvf-fluid-padding15">
+                            <div class="layui-card">
+
+                                <div class="layui-card-body">
+                                    <table id="kContentTable" lay-filter="kContentTable"></table>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
+            </div>
+            <div class="layui-tab-item">
+                <div class="layui-row">
+                    <!-- 主要内容块 -->
+                    <div class="layui-col-md12" id="kMainContentCo2">
+                        <div class="layui-fluid kvf-fluid-padding15">
+                            <div class="layui-card">
+                                <form>
+                                    <div class="layui-form layui-card-header kvf-card-header-auto">
+                                        <div class="layui-form-item">
+                                            <div class="layui-inline">
+                                                <label class="layui-form-label">选择教师</label>
+                                                <div class="layui-input-inline">
+                                                    <select name="teacherName" id="teacherName" lay-verify="required" lay-search="">
+                                                        <option value="">直接选择或搜索选择</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="layui-inline">
+                                                <button class="layui-btn " lay-submit=""
+                                                        lay-filter="kTableSearchFilter2">
+                                                    <i class="layui-icon layui-icon-search"></i>
+                                                </button>
+                                                <button class="layui-btn " type="reset">
+                                                    <i class="layui-icon layui-icon-refresh-1"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
 
+                                <div class="layui-card-body">
+                                    <table id="kContentTable2" lay-filter="kContentTable2"></table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-tab-item">
+                <div class="layui-row">
+                    <!-- 主要内容块 -->
+                    <div class="layui-col-md12" id="kMainContentCo3">
+                        <div class="layui-fluid kvf-fluid-padding15">
+                            <div class="layui-card">
+                                <form>
+                                    <div class="layui-form layui-card-header kvf-card-header-auto">
+                                        <div class="layui-form-item">
+                                            <div class="layui-inline">
+                                                <label class="layui-form-label">选择班级</label>
+                                                <div class="layui-input-inline">
+                                                    <select name="className" id="className" lay-verify="required" lay-search="">
+                                                        <option value="">直接选择或搜索选择</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="layui-inline">
+                                                <button class="layui-btn " lay-submit=""
+                                                        lay-filter="kTableSearchFilter3">
+                                                    <i class="layui-icon layui-icon-search"></i>
+                                                </button>
+                                                <button class="layui-btn " type="reset">
+                                                    <i class="layui-icon layui-icon-refresh-1"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <div class="layui-card-body">
+                                    <table id="kContentTable3" lay-filter="kContentTable3"></table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -28,7 +118,6 @@
 
 <script th:replace="common/base::context"></script>
 <script th:replace="common/base::mainjs"></script>
-
 
 
 <!--主要为了解决当值为0时，不显示的问题（估计是layui的bug）-->
@@ -42,12 +131,60 @@
 </script>
 
 <!--表格行工具栏模板-->
-<script type="text/html" id="rowToolbarTpl">
+<!--<script type="text/html" id="rowToolbarTpl">
     <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
-</script>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i
+            class="layui-icon layui-icon-delete"></i>删除</a>
+</script>-->
 
 <script type="text/javascript" th:inline="javascript">
+
+    //重新渲染表单
+    function renderForm(){
+        layui.use('form', function(){
+            var form = layui.form;//高版本建议把括号去掉，有的低版本，需要加()
+            form.render();
+        });
+    }
+
+    $(function () {
+        $.ajax({
+            url : api.info.teacherListAllName,
+            type : "get",
+            dataType : "json",
+            success(data){
+                var array = data.data;
+                var option = "";
+                for (var i = 0; i < array.length; i++) {
+                    option += "<option value=" + array[i] + ">" + array[i] + "</option>"
+                }
+                $("#teacherName").append(option);
+                renderForm();
+            },
+            error(){
+                kvfKit.errorMsg("获取教师列表失败");
+            }
+        })
+
+        $.ajax({
+            url : api.info.classListAllName,
+            type : "get",
+            dataType : "json",
+            success(data){
+                var array = data.data;
+                var option = "";
+                for (var i = 0; i < array.length; i++) {
+                    option += "<option value=" + array[i] + ">" + array[i] + "</option>"
+                }
+                $("#className").append(option);
+                renderForm();
+            },
+            error(){
+                kvfKit.errorMsg("获取班级列表失败");
+            }
+        })
+    })
+    
     layui.use(['element', 'form', 'layer', 'table'], function () {
         var elemet = layui.element, form = layui.form, layer = layui.layer, table = layui.table;
         var tableId = 'kContentTable';
@@ -55,51 +192,51 @@
         // 实例化table
         var tableIns = table.render($.extend(config.layui.table, {
             elem: '#' + tableId
-            ,url: api.info.scheduleListData //数据接口
-            ,toolbar: '#headToolbarTpl'
-            ,cols: [[ //表头
-                {type:'checkbox', fixed: 'left'}
-                ,{field: 'className', title: '班级名称', sort: true, width: 155}
-                ,{field: 't1', title: '1-1', sort: true, width: 155}
-                ,{field: 't2', title: '1-2', sort: true, width: 155}
-                ,{field: 't3', title: '1-3', sort: true, width: 155}
-                ,{field: 't4', title: '1-4', sort: true, width: 155}
-                ,{field: 't5', title: '2-1', sort: true, width: 155}
-                ,{field: 't6', title: '2-2', sort: true, width: 155}
-                ,{field: 't7', title: '2-3', sort: true, width: 155}
-                ,{field: 't8', title: '2-4', sort: true, width: 155}
-                ,{field: 't9', title: '3-1', sort: true, width: 155}
-                ,{field: 't10', title: '3-2', sort: true, width: 155}
-                ,{field: 't11', title: '3-3', sort: true, width: 155}
-                ,{field: 't12', title: '3-4', sort: true, width: 155}
-                ,{field: 't13', title: '4-1', sort: true, width: 155}
-                ,{field: 't14', title: '4-2', sort: true, width: 155}
-                ,{field: 't15', title: '4-3', sort: true, width: 155}
-                ,{field: 't16', title: '4-4', sort: true, width: 155}
-                ,{field: 't17', title: '5-1', sort: true, width: 155}
-                ,{field: 't18', title: '5-2', sort: true, width: 155}
-                ,{field: 't19', title: '5-3', sort: true, width: 155}
-                ,{field: 't20', title: '5-4', sort: true, width: 155}
-                ,{field: '', title: '操作', width: 155, fixed: 'right', templet: '#rowToolbarTpl'}
+            , url: api.info.scheduleListData //数据接口
+            , toolbar: '#headToolbarTpl'
+            , cols: [[ //表头
+                {type: 'checkbox', fixed: 'left'}
+                , {field: 'className', title: '班级名称', sort: true, width: 155}
+                , {field: 't1', title: '1-1', sort: true, width: 155}
+                , {field: 't2', title: '1-2', sort: true, width: 155}
+                , {field: 't3', title: '1-3', sort: true, width: 155}
+                , {field: 't4', title: '1-4', sort: true, width: 155}
+                , {field: 't5', title: '2-1', sort: true, width: 155}
+                , {field: 't6', title: '2-2', sort: true, width: 155}
+                , {field: 't7', title: '2-3', sort: true, width: 155}
+                , {field: 't8', title: '2-4', sort: true, width: 155}
+                , {field: 't9', title: '3-1', sort: true, width: 155}
+                , {field: 't10', title: '3-2', sort: true, width: 155}
+                , {field: 't11', title: '3-3', sort: true, width: 155}
+                , {field: 't12', title: '3-4', sort: true, width: 155}
+                , {field: 't13', title: '4-1', sort: true, width: 155}
+                , {field: 't14', title: '4-2', sort: true, width: 155}
+                , {field: 't15', title: '4-3', sort: true, width: 155}
+                , {field: 't16', title: '4-4', sort: true, width: 155}
+                , {field: 't17', title: '5-1', sort: true, width: 155}
+                , {field: 't18', title: '5-2', sort: true, width: 155}
+                , {field: 't19', title: '5-3', sort: true, width: 155}
+                , {field: 't20', title: '5-4', sort: true, width: 155}
+                /*, {field: '', title: '操作', width: 155, fixed: 'right', templet: '#rowToolbarTpl'}*/
             ]]
         }));
 
         var area = ['449px', '650px'];
 
         // 监听表格头部事件
-        table.on('toolbar(' + tableId + ')', function(obj){
+        table.on('toolbar(' + tableId + ')', function (obj) {
             var checkStatus = table.checkStatus(obj.config.id);
             var checkData = checkStatus.data; // 得到选中的数据
-            switch(obj.event) {
+            switch (obj.event) {
                 case 'add':
                     layer.open({
                         type: 2
-                        ,title: '添加课程'
-                        ,content: api.info.courseEditView
-                        ,maxmin: true
-                        ,area: area   // 宽高
-                        ,btn: ['确定', '取消']
-                        ,yes: function(index, layero){
+                        , title: '添加课程'
+                        , content: api.info.courseEditView
+                        , maxmin: true
+                        , area: area   // 宽高
+                        , btn: ['确定', '取消']
+                        , yes: function (index, layero) {
                             //点击确认触发 iframe 内容中的按钮提交
                             var submit = layero.find('iframe').contents().find("#kFormSubmit");
                             submit.click();
@@ -107,13 +244,13 @@
                     });
                     break;
                 case 'batchdel':
-                    if(checkData.length === 0){
+                    if (checkData.length === 0) {
                         return kvfKit.warningMsg('请选择数据');
                     }
-                    layer.confirm('确定删除吗？', function(index) {
+                    layer.confirm('确定删除吗？', function (index) {
 
                         var ids = [];
-                        $.each(checkData, function(i, n){
+                        $.each(checkData, function (i, n) {
                             ids[i] = n.id;
                         });
 
@@ -151,54 +288,194 @@
             }
         });
 
-        // 表格行按钮 监听事件
-        table.on('tool(' + tableId + ')', function (obj) {
-            var data = obj.data; //获得当前行数据
-            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
-            var tr = obj.tr; //获得当前行 tr 的DOM对象
+        /* // 表格行按钮 监听事件
+         table.on('tool(' + tableId + ')', function (obj) {
+             var data = obj.data; //获得当前行数据
+             var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+             var tr = obj.tr; //获得当前行 tr 的DOM对象
 
-            if (layEvent === 'del') {
-                layer.confirm('确定删除吗？', function(index) {
+             if (layEvent === 'del') {
+                 layer.confirm('确定删除吗？', function (index) {
 
-                    //执行 Ajax 后重载
-                    $.ajax({
-                        type: req.type.post,
-                        url: api.info.scheduleRm + data.id,
-                        async: false,
-                        success: function (r) {
-                            if (r.code === req.status.ok) {
-                                table.reload(tableId);
-                                kvfKit.sucessMsg('已删除');
-                            } else {
-                                kvfKit.errorMsg(r.msg);
-                            }
-                        }
-                    });
-                });
-            }
-            if (layEvent === 'edit') {
-                layer.open({
-                    type: 2
-                    ,title: '编辑课程'
-                    ,content:  api.info.courseEditView + '?id=' + data.id
-                    ,maxmin: true
-                    ,area: area   // 宽高
-                    ,btn: ['确定', '取消']
-                    ,yes: function(index, layero){
-                        //点击确认触发 iframe 内容中的按钮提交
-                        var submit = layero.find('iframe').contents().find("#kFormSubmit");
-                        submit.click();
-                    }
-                });
-            }
+                     //执行 Ajax 后重载
+                     $.ajax({
+                         type: req.type.post,
+                         url: api.info.scheduleRm + data.id,
+                         async: false,
+                         success: function (r) {
+                             if (r.code === req.status.ok) {
+                                 table.reload(tableId);
+                                 kvfKit.sucessMsg('已删除');
+                             } else {
+                                 kvfKit.errorMsg(r.msg);
+                             }
+                         }
+                     });
+                 });
+             }
+             if (layEvent === 'edit') {
+                 layer.open({
+                     type: 2
+                     , title: '编辑课程'
+                     , content: api.info.courseEditView + '?id=' + data.id
+                     , maxmin: true
+                     , area: area   // 宽高
+                     , btn: ['确定', '取消']
+                     , yes: function (index, layero) {
+                         //点击确认触发 iframe 内容中的按钮提交
+                         var submit = layero.find('iframe').contents().find("#kFormSubmit");
+                         submit.click();
+                     }
+                 });
+             }
 
-        });
-
+         });
+ */
         // 监听查询
         form.on('submit(kTableSearchFilter)', function (obj) {
             var params = obj.field;
             log('seach=', params);//
             tableIns.reload({
+                where: params,
+                page: {current: 1}
+            });
+            return false;
+        });
+
+        // 绑定监听回车事件
+        kvfKit.bindEnterEventForLayuiForm();
+
+    });
+
+    /*************************根据教师显示*********************************/
+    layui.use(['element', 'form', 'layer', 'table'], function () {
+        var elemet = layui.element, form = layui.form, layer = layui.layer, table = layui.table;
+        var tableId = 'kContentTable2';
+
+        // 实例化table
+        var tableIns2 = table.render($.extend(config.layui.table, {
+            elem: '#' + tableId
+            , url: api.info.scheduleListDataForTeacher //数据接口
+            , toolbar: '#headToolbarTp2'
+            , cols: [[ //表头
+                {field: 'z1', title: '周一', sort: true, width: 240}
+                , {field: 'z2', title: '周二', sort: true, width: 240}
+                , {field: 'z3', title: '周三', sort: true, width: 240}
+                , {field: 'z4', title: '周四', sort: true, width: 240}
+                , {field: 'z5', title: '周五', sort: true, width: 240}
+            ]]
+        }));
+
+        var area = ['449px', '650px'];
+
+        // 监听表格头部事件
+        table.on('toolbar(' + tableId + ')', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            var checkData = checkStatus.data; // 得到选中的数据
+            switch (obj.event) {
+                case 'add':
+                    layer.open({
+                        type: 2
+                        , title: '添加课程'
+                        , content: api.info.courseEditView
+                        , maxmin: true
+                        , area: area   // 宽高
+                        , btn: ['确定', '取消']
+                        , yes: function (index, layero) {
+                            //点击确认触发 iframe 内容中的按钮提交
+                            var submit = layero.find('iframe').contents().find("#kFormSubmit");
+                            submit.click();
+                        }
+                    });
+                    break;
+                case 'batchdel':
+                    if (checkData.length === 0) {
+                        return kvfKit.warningMsg('请选择数据');
+                    }
+                    layer.confirm('确定删除吗？', function (index) {
+
+                        var ids = [];
+                        $.each(checkData, function (i, n) {
+                            ids[i] = n.id;
+                        });
+
+                        //执行 Ajax 后重载
+                        $.ajax({
+                            type: req.type.post,
+                            url: api.info.scheduleRmBatch,
+                            data: {ids: ids.toString()},
+                            success: function (r) {
+                                if (r.code === req.status.ok) {
+                                    table.reload(tableId);
+                                    kvfKit.sucessMsg('已删除');
+                                } else {
+                                    kvfKit.errorMsg(r.msg);
+                                }
+                            }
+                        });
+
+                    });
+                    break;
+                case "arranging":
+                    console.log("arranging");
+                    $.ajax({
+                        type: req.type.get,
+                        url: api.info.arranging,
+                        success: function (r) {
+                            if (r.code === req.status.ok) {
+                                table.reload(tableId);
+                                kvfKit.sucessMsg('排课成功');
+                            } else {
+                                kvfKit.errorMsg(r.msg);
+                            }
+                        }
+                    });
+            }
+        });
+
+
+        // 监听查询
+        form.on('submit(kTableSearchFilter2)', function (obj) {
+            var params = obj.field;
+            log('seach=', params);//
+            tableIns2.reload({
+                where: params,
+                page: {current: 1}
+            });
+            return false;
+        });
+
+        // 绑定监听回车事件
+        kvfKit.bindEnterEventForLayuiForm();
+
+    });
+
+    /*************************根据班级显示*********************************/
+    layui.use(['element', 'form', 'layer', 'table'], function () {
+        var elemet = layui.element, form = layui.form, layer = layui.layer, table = layui.table;
+        var tableId = 'kContentTable3';
+
+        // 实例化table
+        var tableIns3 = table.render($.extend(config.layui.table, {
+            elem: '#' + tableId
+            , url: api.info.scheduleListDataForClass //数据接口
+            , toolbar: '#headToolbarTp3'
+            , cols: [[ //表头
+                {field: 'z1', title: '周一', sort: true, width: 240}
+                , {field: 'z2', title: '周二', sort: true, width: 240}
+                , {field: 'z3', title: '周三', sort: true, width: 240}
+                , {field: 'z4', title: '周四', sort: true, width: 240}
+                , {field: 'z5', title: '周五', sort: true, width: 240}
+            ]]
+        }));
+
+
+
+        // 监听查询
+        form.on('submit(kTableSearchFilter3)', function (obj) {
+            var params = obj.field;
+            log('seach=', params);//
+            tableIns3.reload({
                 where: params,
                 page: {current: 1}
             });

@@ -50,6 +50,25 @@ FROM class_course cc
 ORDER BY cc.Class_name asc
     </select>
 
+    <select id="selectScheduleListByTeacher" resultType="com.kalvin.kvf.modules.sys.infoMng.scheduleInfo.entity.Schedule" parameterType="string">
+        SELECT <include refid="Base_Column_List" /> from class_course
+        <trim prefix="where" prefixOverrides="and">
+            <if test="teacherName != null">
+                AND teacher = #{teacherName}
+            </if>
+        </trim>
+        order by time
+    </select>
+
+    <select id="selectScheduleListByClass" resultType="com.kalvin.kvf.modules.sys.infoMng.scheduleInfo.entity.Schedule" parameterType="string">
+        SELECT <include refid="Base_Column_List" /> from class_course
+        <trim prefix="where" prefixOverrides="and">
+            <if test="className != null">
+                AND Class_name = #{className}
+            </if>
+        </trim>
+        order by time
+    </select>
     <delete id="removeAll">
         delete from class_course
     </delete>

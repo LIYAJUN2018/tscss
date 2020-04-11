@@ -139,6 +139,7 @@ var api = {
         
         // 班级管理
     	classListData : BASE_WEB + "info/class/list/data",
+    	classListAllName : BASE_WEB + "info/class/list/getAllClassName",
         classEditView: BASE_WEB + 'info/class/edit',
         classEdit: BASE_WEB + 'info/class/edit',
         classAdd: BASE_WEB + 'info/class/add',
@@ -147,6 +148,7 @@ var api = {
         
         // 教师管理
     	teacherListData : BASE_WEB + "info/teacher/list/data",
+    	teacherListAllName : BASE_WEB + "info/teacher/list/getAllTeacherName",
         teacherEditView: BASE_WEB + 'info/teacher/edit',
         teacherEdit: BASE_WEB + 'info/teacher/edit',
         teacherAdd: BASE_WEB + 'info/teacher/add',
@@ -156,6 +158,8 @@ var api = {
         // 课表管理
         arranging: BASE_WEB + 'info/schedule/arranging',
         scheduleListData : BASE_WEB + "info/schedule/list/data",
+        scheduleListDataForTeacher : BASE_WEB + "info/schedule/list/dataForTeacher",
+        scheduleListDataForClass : BASE_WEB + "info/schedule/list/dataForClass",
         scheduleRm: BASE_WEB + 'info/schedule/remove/',
         scheduleRmBatch: BASE_WEB + 'info/schedule/removeBatch',
 
