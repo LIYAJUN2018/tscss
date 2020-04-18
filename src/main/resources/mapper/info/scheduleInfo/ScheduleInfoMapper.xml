@@ -69,6 +69,15 @@ ORDER BY cc.Class_name asc
         </trim>
         order by time
     </select>
+    <select id="selectScheduleListByClassroom" resultType="com.kalvin.kvf.modules.sys.infoMng.scheduleInfo.entity.Schedule" parameterType="string">
+        SELECT <include refid="Base_Column_List" /> from class_course
+        <trim prefix="where" prefixOverrides="and">
+            <if test="classroom != null">
+                AND classroom = #{classroom}
+            </if>
+        </trim>
+        order by time
+    </select>
     <delete id="removeAll">
         delete from class_course
     </delete>
