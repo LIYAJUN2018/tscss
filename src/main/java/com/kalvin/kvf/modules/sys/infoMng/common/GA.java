@@ -63,8 +63,12 @@ public class GA {
             // 对基因进行合并
             List<String> resultList = closedGene(individualMap);
 
+
             //第七步对基因进行解码，准备存入数据库
             List<Schedule> schedules = decoding(resultList);
+
+            /*double value = GAUtils.alculateExpectedValue(resultList);
+            System.out.println(value);*/
 
             scheduleInfoService.saveBatch(schedules);
 
@@ -85,8 +89,8 @@ public class GA {
 
         for (Map<String, Object> map : maps) {
             courseCodeMap.put(map.get("Course_No").toString(), map.get("Course_name").toString());
-            teacherCodeMap.put(map.get("teacherNo").toString(), map.get("name").toString());
-            classCodeMap.put(map.get("classNo").toString(), map.get("Class_name").toString());
+            teacherCodeMap.put(map.get("teacher_no").toString(), map.get("name").toString());
+            classCodeMap.put(map.get("class_no").toString(), map.get("Class_name").toString());
             classroomCodeMap.put(map.get("Classroom_No").toString(), map.get("Classroom_name").toString());
         }
     }

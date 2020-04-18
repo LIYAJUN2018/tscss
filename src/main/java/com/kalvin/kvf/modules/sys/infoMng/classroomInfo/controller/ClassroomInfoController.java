@@ -3,6 +3,7 @@ package com.kalvin.kvf.modules.sys.infoMng.classroomInfo.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kalvin.kvf.common.controller.BaseController;
 import com.kalvin.kvf.common.dto.R;
+import com.kalvin.kvf.modules.sys.infoMng.classInfo.entity.Clas;
 import com.kalvin.kvf.modules.sys.infoMng.classroomInfo.entity.Classroom;
 import com.kalvin.kvf.modules.sys.infoMng.classroomInfo.service.IClassroomInfoService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("info/classroom")
@@ -30,6 +32,13 @@ public class ClassroomInfoController extends BaseController{
 	public R listData(Classroom classroom) {
 		Page<Classroom> page = classroomInfoService.listUserPage(classroom);
 		return R.ok(page);
+	}
+
+	@GetMapping(value = "list/getAllClassroomName")
+	public R getAllClassroomName() {
+		List<Classroom> list = classroomInfoService.list();
+		List<String> collect = list.stream().map(Classroom::getClassroomName).collect(Collectors.toList());
+		return R.ok(collect);
 	}
 
 	/**

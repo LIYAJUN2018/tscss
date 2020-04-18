@@ -38,20 +38,20 @@
     </select>
 
     <select id="listCourseForCode" resultType="java.util.HashMap">
-        SELECT
+       SELECT
         co.Course_name,
 	co.Course_No,
 	co.Course_times,
 	t.`name`,
-	t.teacherNo,
+	t.teacher_no,
 	c.Class_name,
-	c.classNo,
+	c.class_no,
 	cr.Classroom_name,
 	cr.Classroom_No,
 	CONCAT(
-		t.teacherNo,
+		t.teacher_no,
 		co.Course_No,
-		c.classNo,
+		c.class_no,
 		cr.Classroom_No,
 		co.attr
 	) as code
