@@ -14,6 +14,7 @@
             <li class="layui-this">课表总览</li>
             <li>教师课表</li>
             <li>班级课表</li>
+            <li>教室课表</li>
         </ul>
         <div class="layui-tab-content">
 
@@ -111,6 +112,45 @@
                     </div>
                 </div>
             </div>
+            <div class="layui-tab-item">
+                <div class="layui-row">
+                    <!-- 主要内容块 -->
+                    <div class="layui-col-md12" id="kMainContentCo4">
+                        <div class="layui-fluid kvf-fluid-padding15">
+                            <div class="layui-card">
+                                <form>
+                                    <div class="layui-form layui-card-header kvf-card-header-auto">
+                                        <div class="layui-form-item">
+                                            <div class="layui-inline">
+                                                <label class="layui-form-label">选择教室</label>
+                                                <div class="layui-input-inline">
+                                                    <select name="classroomName" id="classroomName" lay-verify="required" lay-search="">
+                                                        <option value="">直接选择或搜索选择</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="layui-inline">
+                                                <button class="layui-btn " lay-submit=""
+                                                        lay-filter="kTableSearchFilter4">
+                                                    <i class="layui-icon layui-icon-search"></i>
+                                                </button>
+                                                <button class="layui-btn " type="reset">
+                                                    <i class="layui-icon layui-icon-refresh-1"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <div class="layui-card-body">
+                                    <table id="kContentTable4" lay-filter="kContentTable4"></table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -181,6 +221,23 @@
             },
             error(){
                 kvfKit.errorMsg("获取班级列表失败");
+            }
+        })
+        $.ajax({
+            url : api.info.classroomListAllName,
+            type : "get",
+            dataType : "json",
+            success(data){
+                var array = data.data;
+                var option = "";
+                for (var i = 0; i < array.length; i++) {
+                    option += "<option value=" + array[i] + ">" + array[i] + "</option>"
+                }
+                $("#classroomName").append(option);
+                renderForm();
+            },
+            error(){
+                kvfKit.errorMsg("获取教室列表失败");
             }
         })
     })
@@ -476,6 +533,42 @@
             var params = obj.field;
             log('seach=', params);//
             tableIns3.reload({
+                where: params,
+                page: {current: 1}
+            });
+            return false;
+        });
+
+        // 绑定监听回车事件
+        kvfKit.bindEnterEventForLayuiForm();
+
+    });
+    /*************************根据教室显示*********************************/
+    layui.use(['element', 'form', 'layer', 'table'], function () {
+        var elemet = layui.element, form = layui.form, layer = layui.layer, table = layui.table;
+        var tableId = 'kContentTable4';
+
+        // 实例化table
+        var tableIns4 = table.render($.extend(config.layui.table, {
+            elem: '#' + tableId
+            , url: api.info.scheduleListDataForClassroom //数据接口
+            , toolbar: '#headToolbarTp4'
+            , cols: [[ //表头
+                {field: 'z1', title: '周一', sort: true, width: 240}
+                , {field: 'z2', title: '周二', sort: true, width: 240}
+                , {field: 'z3', title: '周三', sort: true, width: 240}
+                , {field: 'z4', title: '周四', sort: true, width: 240}
+                , {field: 'z5', title: '周五', sort: true, width: 240}
+            ]]
+        }));
+
+
+
+        // 监听查询
+        form.on('submit(kTableSearchFilter4)', function (obj) {
+            var params = obj.field;
+            log('seach=', params);//
+            tableIns4.reload({
                 where: params,
                 page: {current: 1}
             });

@@ -131,6 +131,7 @@ var api = {
 
     	// 教室管理
     	classroomListData : BASE_WEB + "info/classroom/list/data",
+    	classroomListAllName : BASE_WEB + "info/classroom/list/getAllClassroomName",
         classroomEditView: BASE_WEB + 'info/classroom/edit',
         classroomEdit: BASE_WEB + 'info/classroom/edit',
         classroomAdd: BASE_WEB + 'info/classroom/add',
@@ -160,6 +161,7 @@ var api = {
         scheduleListData : BASE_WEB + "info/schedule/list/data",
         scheduleListDataForTeacher : BASE_WEB + "info/schedule/list/dataForTeacher",
         scheduleListDataForClass : BASE_WEB + "info/schedule/list/dataForClass",
+        scheduleListDataForClassroom : BASE_WEB + "info/schedule/list/dataForClassroom",
         scheduleRm: BASE_WEB + 'info/schedule/remove/',
         scheduleRmBatch: BASE_WEB + 'info/schedule/removeBatch',
 
