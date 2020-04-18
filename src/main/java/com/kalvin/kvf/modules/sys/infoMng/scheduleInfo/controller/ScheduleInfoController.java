@@ -65,6 +65,16 @@ public class ScheduleInfoController {
         return R.ok(list);
     }
 
+    @GetMapping(value = "list/dataForClassroom")
+    public R listDataForClassroom(String classroomName) {
+        if (null == classroomName) {
+            return R.ok();
+        }
+        List<Schedule> schedules = scheduleInfoService.selectScheduleListByClassroom(classroomName);
+        List list = arrayToList(schedules, false);
+        return R.ok(list);
+    }
+
     /**
      * 把数据库中课表形式转换成通用的课表形式
      *
@@ -91,7 +101,7 @@ public class ScheduleInfoController {
             if (null == scheduleArray[i]) {
                 map.put("z" + (i % 5 + 1), null);
             } else {
-                if (true) {
+                if (type) {
                     map.put("z" + (i % 5 + 1), scheduleArray[i].getClassroom()
                             + "-" + scheduleArray[i].getCourse()
                     );

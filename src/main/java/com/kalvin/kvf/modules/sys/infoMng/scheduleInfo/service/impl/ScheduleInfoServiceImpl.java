@@ -1,10 +1,7 @@
 package com.kalvin.kvf.modules.sys.infoMng.scheduleInfo.service.impl;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.kalvin.kvf.modules.sys.infoMng.classInfo.entity.Clas;
 import com.kalvin.kvf.modules.sys.infoMng.scheduleInfo.entity.Schedule;
-import com.kalvin.kvf.modules.sys.infoMng.scheduleInfo.entity.Schedule1;
 import com.kalvin.kvf.modules.sys.infoMng.scheduleInfo.mapper.ScheduleInfoMapper;
 import com.kalvin.kvf.modules.sys.infoMng.scheduleInfo.service.IScheduleInfoService;
 import org.springframework.stereotype.Service;
@@ -37,5 +34,11 @@ public class ScheduleInfoServiceImpl extends ServiceImpl<ScheduleInfoMapper, Sch
     @Override
     public void removeAll() {
         baseMapper.removeAll();
+    }
+
+    @Override
+    public List<Schedule> selectScheduleListByClassroom(String classroomName) {
+        List<Schedule> schedules = baseMapper.selectScheduleListByClassroom(classroomName);
+        return schedules;
     }
 }

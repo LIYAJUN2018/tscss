@@ -15,4 +15,6 @@ public interface ScheduleInfoMapper extends BaseMapper<Schedule> {
     List<Schedule> selectScheduleListByClass(@Param("className") String className);
 
     void removeAll();
+
+    List<Schedule> selectScheduleListByClassroom(@Param("classroom")String classroom);
 }
